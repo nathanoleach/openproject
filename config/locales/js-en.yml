@@ -83,6 +83,7 @@ en:
     description_subwork_package: "Child of work package #%{id}"
     editor:
       macro:
+        child_pages: 'Child pages'
         toc: 'Table of contents'
         wiki_page_include:
           button: 'Include content of another wiki page'
@@ -101,7 +102,6 @@ en:
         embedded_table:
           button: 'Embed work package table'
           text: 'Embedded work package table (placeholder)'
-
 
     error:
       internal: "An internal error has occurred."
