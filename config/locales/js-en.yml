@@ -83,7 +83,13 @@ en:
     description_subwork_package: "Child of work package #%{id}"
     editor:
       macro:
-        child_pages: 'Child pages'
+        child_pages:
+          button: 'List child pages'
+          text: 'list of child pages (placeholder)'
+          page: 'Wiki page'
+          hint: |
+            List all child pages of the current page or, by specifying its title or slug, of another page.
+            You can list all child pages of paga of a different project by separating them with a colon like the following example.
         toc: 'Table of contents'
         wiki_page_include:
           button: 'Include content of another wiki page'

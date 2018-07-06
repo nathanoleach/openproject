@@ -30,6 +30,8 @@ import {OpModalService} from "core-components/op-modals/op-modal.service";
 import {Injectable} from "@angular/core";
 import {WpButtonMacroModal} from "core-components/modals/editor/macro-wp-button-modal/wp-button-macro.modal";
 import {WikiIncludePageMacroModal} from "core-components/modals/editor/macro-wiki-include-page-modal/wiki-include-page-macro.modal";
+import {WikiChildPagesMacroModal} from "core-components/modals/editor/macro-wiki-include-page-modal/child-pages-macro.modal";
+import {ChildPagesMacroModal} from "core-components/modals/editor/macro-wiki-include-page-modal/macro-child-pages-modal/child-pages-macro.modal";
 
 @Injectable()
 export class EditorMacrosService {
@@ -60,6 +62,21 @@ export class EditorMacrosService {
     return new Promise<string>((resolve, _) => {
       const modal = this.opModalService.show(WikiIncludePageMacroModal, { page: page });
       modal.closingEvent.subscribe((modal:WikiIncludePageMacroModal) => {
+        if (modal.changed) {
+          resolve(modal.page);
+        }
+      });
+    });
+  }
+
+  /**
+   * Show a modal to edit the wiki include macro.
+   * Used from within ckeditor.
+   */
+  public configureChildPages(page:string):Promise<string> {
+    return new Promise<string>((resolve, _) => {
+      const modal = this.opModalService.show(ChildPagesMacroModal, { page: page });
+      modal.closingEvent.subscribe((modal:ChildPagesMacroModal) => {
         if (modal.changed) {
           resolve(modal.page);
         }
