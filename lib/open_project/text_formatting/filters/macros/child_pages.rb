@@ -31,10 +31,14 @@
 module OpenProject::TextFormatting::Filters::Macros
   module ChildPages
     HTML_CLASS = 'child-pages'.freeze
-
+    
     module_function
 
-    def apply_conditionally(macro, _result, context)
+    def identifier
+      HTML_CLASS
+    end
+
+    def apply(macro, result:, context:)
       insert_child_pages(macro, context) if is?(macro)
     end
 
