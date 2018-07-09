@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'features/work_packages/work_packages_page'
 require 'features/work_packages/details/inplace_editor/shared_examples'
 
-describe 'custom field inplace editor', js: true, with_settings: { text_formatting: 'markdown' } do
+describe 'custom field inplace editor', js: true do
   let(:user) { FactoryBot.create :admin }
   let(:type) { FactoryBot.create(:type_standard, custom_fields: custom_fields) }
   let(:project) do

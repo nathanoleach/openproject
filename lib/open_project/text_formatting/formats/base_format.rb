@@ -1,4 +1,5 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -27,56 +28,31 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  module Markdown
-    class Helper
-      attr_reader :view_context
-
-      def initialize(view_context)
-        @view_context = view_context
+module OpenProject::TextFormatting::Formats
+  class BaseFormat
+    class << self
+      def format
+        raise NotImplementedError
       end
 
-
-      def text_formatting_js_includes
-        if Setting.use_wysiwyg?
-          view_context.javascript_include_tag 'vendor/ckeditor/ckeditor.js'
-        else
-          view_context.javascript_include_tag 'jstoolbar/markdown.js'
-        end
+      def priority
+        raise NotImplementedError
       end
 
-      def text_formatting_has_preview?
-        false
+      def helper
+        @helper = "OpenProject::TextFormatting::Formats::#{format.to_s.camelcase}::Helper".constantize
       end
 
-      def wikitoolbar_for(field_id)
-        if Setting.use_wysiwyg?
-          wysiwyg_for field_id
-        else
-          jstoolbar_for field_id
-        end
+      def formatter
+        @formatter ||= "OpenProject::TextFormatting::Formats::#{format.to_s.camelcase}::Formatter".constantize
       end
 
-      private
-
-      def wysiwyg_for(field_id)
-        # Hide the original textarea
-        view_context.content_for(:additional_js_dom_ready) do
-          "document.getElementById('#{field_id}').style.display = 'none';".html_safe
-        end
-
-        view_context.content_tag 'op-ckeditor-form', '', 'textarea-selector': "##{field_id}"
-      end
-
-      def jstoolbar_for(field_id)
-        view_context.content_for(:additional_js_dom_ready) do
-          %(
-              var wikiToolbar = new jsToolBar(document.getElementById('#{field_id}'));
-              wikiToolbar.draw();
-            ).html_safe
-        end
-
-        ''.html_safe
+      def setup
+        # Force lookup to avoid const errors later on.
+        helper and formatter
+      rescue NameError => e
+        Rails.logger.error "Failed to register wiki formatting #{format}: #{e}"
+        Rails.logger.debug { e.backtrace }
       end
     end
   end

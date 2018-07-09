@@ -264,9 +264,8 @@ module API
             "#{root}/revisions/#{id}"
           end
 
-          def self.render_markup(format: nil, link: nil)
-            format = format || Setting.text_formatting
-            format = 'plain' if format == '' # Setting will return '' for plain
+          def self.render_markup(link: nil)
+            format = OpenProject::TextFormatting::Formats.rich_format
 
             path = "#{root}/render/#{format}"
             path += "?context=#{link}" if link

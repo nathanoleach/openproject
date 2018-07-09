@@ -1,5 +1,4 @@
 #-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -28,25 +27,18 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-require 'roar/decorator'
-require 'roar/json/hal'
-
-module API
-  module V3
-    module Attachments
-      class AttachmentMetadataRepresenter < ::API::Decorators::Single
-        def initialize(attachment)
-          super(attachment, current_user: nil)
-        end
-
-        property :file_name
-        property :description,
-                 getter: ->(*) {
-                   ::API::Decorators::Formattable.new(description, plain: true)
-                 },
-                 setter: ->(fragment:, **) { self.description = fragment['raw'] },
-                 render_nil: true
+module OpenProject::TextFormatting::Formats
+  module Plain
+    class Helper
+      def wikitoolbar_for(_field_id)
+        ''.html_safe
       end
+
+      def text_formatting_has_preview?
+        false
+      end
+
+      def text_formatting_js_includes; end
     end
   end
 end

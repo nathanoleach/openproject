@@ -1,12 +1,11 @@
-//-- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2017 Jean-Philippe Lang
+// Copyright (C) 2006-2013 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -23,8 +22,28 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
-// See docs/COPYRIGHT.rdoc for more details.
-//++
+// See doc/COPYRIGHT.rdoc for more details.
+// ++
 
-//= require jstoolbar/jstoolbar
-//= require jstoolbar/translations
+import {Component} from "@angular/core";
+import {EditFieldComponent} from "core-app/modules/fields/edit/edit-field.component";
+import {FormattableEditField} from "core-app/modules/fields/edit/field-types/formattable-edit-field";
+
+@Component({
+  template: `
+    <div class="textarea-wrapper">
+      <div class="op-ckeditor-wrapper op-ckeditor-element">
+      </div>
+      <edit-field-controls *ngIf="!handler.inEditMode"
+                           [fieldController]="handler"
+                           (onSave)="handler.handleUserSubmit()"
+                           (onCancel)="handler.handleUserCancel()"
+                           [saveTitle]="field.text.save"
+                           [cancelTitle]="field.text.cancel">
+      </edit-field-controls>
+    </div>
+  `
+})
+export class FormattableEditFieldComponent extends EditFieldComponent {
+  public field:FormattableEditField;
+}

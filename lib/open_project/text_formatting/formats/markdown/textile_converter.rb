@@ -54,7 +54,7 @@
 
 require 'open3'
 
-module OpenProject::TextFormatting::Formatters
+module OpenProject::TextFormatting::Formats
   module Markdown
     class TextileConverter
       include ActionView::Helpers::TagHelper

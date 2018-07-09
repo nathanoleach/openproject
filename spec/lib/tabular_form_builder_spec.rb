@@ -188,7 +188,7 @@ JJ Abrams</textarea>
       }).at_path('textarea')
     end
 
-    context 'when requesting a text formatting wrapper', with_settings: { text_formatting: :markdown } do
+    context 'when requesting a text formatting wrapper' do
       let(:options) { { title: 'Name', class: 'custom-class', with_text_formatting: true } }
 
       context 'an id is missing' do

@@ -2,7 +2,7 @@
 
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -25,23 +25,43 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See docs/COPYRIGHT.rdoc for more details.
+# See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require_relative '../legacy_spec_helper'
+module OpenProject::TextFormatting::Formats::Markdown
+  class Formatter < OpenProject::TextFormatting::Formats::BaseFormatter
+    attr_reader :context,
+                :pipeline
 
-describe HelpController, type: :controller do
-  render_views
+    def initialize(context)
+      @context = context
+      @pipeline = ::HTML::Pipeline.new(located_filters, context)
+    end
 
-  specify 'renders wiki_syntax properly' do
-    get 'wiki_syntax'
+    def to_html(text)
+      result = pipeline.call(text, context)
+      output = result[:output].to_s
 
-    assert_select 'h1', 'Wiki Syntax Quick Reference'
-  end
+      output.html_safe
+    end
 
-  specify 'renders wiki_syntax_detailed properly' do
-    get 'wiki_syntax_detailed'
+    def to_document(text)
+      pipeline.to_document text, context
+    end
 
-    assert_select 'h1', 'Wiki Formatting'
+    def filters
+      [
+        :markdown,
+        :sanitization,
+        HTML::Pipeline::TableOfContentsFilter,
+        :macro,
+        :pattern_matcher,
+        :autolink
+      ]
+    end
+
+    def self.format
+      :markdown
+    end
   end
 end

@@ -1,7 +1,7 @@
 #-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -24,21 +24,35 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See docs/COPYRIGHT.rdoc for more details.
+# See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  module Plain
-    class Helper
-      def wikitoolbar_for(_field_id)
-        ''.html_safe
-      end
+module OpenProject::TextFormatting::Formats
+  class BaseFormatter
+    attr_reader :options, :project
 
-      def text_formatting_has_preview?
-        false
-      end
+    def initialize(options)
+      @options = options
+      @project = options[:project]
+    end
 
-      def text_formatting_js_includes
+    def to_html(text)
+      raise NotImplementedError
+    end
+
+    protected
+
+    def filters
+      []
+    end
+
+    def located_filters
+      filters.map do |f|
+        if [Symbol, String].include? f.class
+          OpenProject::TextFormatting::Filters.const_get("#{f}_filter".classify)
+        else
+          f
+        end
       end
     end
   end

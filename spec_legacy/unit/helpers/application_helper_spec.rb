@@ -41,10 +41,10 @@ describe ApplicationHelper, type: :helper do
     @anonymous = FactoryBot.create :anonymous
     @non_member = FactoryBot.create :user
     @project_member = FactoryBot.create :user,
-                                         member_in_project: @project,
-                                         member_through_role: FactoryBot.create(:role,
-                                                                                 permissions: [:view_work_packages, :edit_work_packages,
-                                                                                               :browse_repository, :view_changesets, :view_wiki_pages])
+                                        member_in_project: @project,
+                                        member_through_role: FactoryBot.create(:role,
+                                                                               permissions: [:view_work_packages, :edit_work_packages,
+                                                                                             :browse_repository, :view_changesets, :view_wiki_pages])
 
     @issue = FactoryBot.create :work_package, project: @project, author: @project_member, type: @project.types.first
 
@@ -53,11 +53,11 @@ describe ApplicationHelper, type: :helper do
                                           content: 'not actually a gif',
                                           binary: true
     @attachment = FactoryBot.create :attachment,
-                                     author: @project_member,
-                                     file: file,
-                                     content_type: 'image/gif',
-                                     container: @issue,
-                                     description: 'This is a logo'
+                                    author: @project_member,
+                                    file: file,
+                                    content_type: 'image/gif',
+                                    container: @issue,
+                                    description: 'This is a logo'
 
     allow(User).to receive(:current).and_return(@project_member)
   end
@@ -185,8 +185,8 @@ RAW
 
   it 'should cross project redmine links' do
     version = FactoryBot.create :version,
-                                 name: '1.0',
-                                 project: @project
+                                name: '1.0',
+                                project: @project
 
     to_test = {
       # versions
@@ -196,11 +196,11 @@ RAW
     }
 
     repository = FactoryBot.create :repository_subversion,
-                                    project: @project
+                                   project: @project
 
     changeset = FactoryBot.create :changeset,
-                                   repository: repository,
-                                   comments: 'This commit fixes #1, #2 and references #1 & #3'
+                                  repository: repository,
+                                  comments: 'This commit fixes #1, #2 and references #1 & #3'
     identifier = @project.identifier
 
     source_link = link_to("#{identifier}:source:/some/file",
@@ -452,13 +452,6 @@ RAW
                 '</ul>'
 
     assert helper.format_text(raw).gsub("\n", '').include?(expected), helper.format_text(raw)
-  end
-
-  it 'should default formatter' do
-    Setting.text_formatting = 'unknown'
-    text = 'a *link*: http://www.example.net/'
-    assert_equal '<p>a *link*: <a href="http://www.example.net/">http://www.example.net/</a></p>', helper.format_text(text)
-    Setting.text_formatting = 'textile'
   end
 
   it 'should due date distance in words' do

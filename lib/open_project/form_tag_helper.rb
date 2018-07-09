@@ -88,8 +88,7 @@ module OpenProject
     def text_formatting_wrapper(target_id)
       return ''.html_safe unless target_id.present?
 
-      format = Setting.text_formatting
-      helper = ::OpenProject::TextFormatting::Formatters.helper_for(format).new(self)
+      helper = ::OpenProject::TextFormatting::Formats.rich_helper.new(self)
       helper.wikitoolbar_for target_id
     end
 

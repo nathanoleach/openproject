@@ -1,7 +1,8 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -24,30 +25,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See docs/COPYRIGHT.rdoc for more details.
+# See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  module Plain
-    class Formatter < OpenProject::TextFormatting::Formatters::Base
-      attr_reader :context,
-                  :pipeline
-
-      def initialize(context)
-        @context = context
-        @pipeline = HTML::Pipeline.new(located_filters, context)
+module OpenProject::TextFormatting::Formats::Markdown
+  class Format < OpenProject::TextFormatting::Formats::BaseFormat
+    class << self
+      def format
+        :markdown
       end
 
-      def to_html(text)
-        pipeline.to_html(text, context).html_safe
-      end
-
-      def to_document(text)
-        pipeline.to_document text, context
-      end
-
-      def filters
-        %i(plain pattern_matcher)
+      def priority
+        5
       end
     end
   end

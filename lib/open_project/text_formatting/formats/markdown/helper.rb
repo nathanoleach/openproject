@@ -27,10 +27,9 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  module Textile
+module OpenProject::TextFormatting::Formats
+  module Markdown
     class Helper
-
       attr_reader :view_context
 
       def initialize(view_context)
@@ -38,34 +37,26 @@ module OpenProject::TextFormatting::Formatters
       end
 
       def text_formatting_js_includes
-        view_context.javascript_include_tag 'jstoolbar/textile.js'
+        view_context.javascript_include_tag 'vendor/ckeditor/ckeditor.js'
       end
 
       def text_formatting_has_preview?
-        true
+        false
       end
 
       def wikitoolbar_for(field_id)
-        help_button = view_context.content_tag(
-          :button,
-          '',
-          type: 'button',
-          class: 'jstb_help formatting-help-link-button',
-          :'aria-label' => ::I18n.t('js.inplace.link_formatting_help'),
-          title: ::I18n.t('js.inplace.link_formatting_help')
-        )
+        wysiwyg_for field_id
+      end
 
+      private
 
+      def wysiwyg_for(field_id)
+        # Hide the original textarea
         view_context.content_for(:additional_js_dom_ready) do
-          %(
-              var wikiToolbar = new jsToolBar(document.getElementById('#{field_id}'));
-
-              wikiToolbar.setHelpLink(jQuery('#{view_context.escape_javascript help_button}')[0]);
-              wikiToolbar.draw();
-            ).html_safe
+          "document.getElementById('#{field_id}').style.display = 'none';".html_safe
         end
 
-        ''.html_safe
+        view_context.content_tag 'op-ckeditor-form', '', 'textarea-selector': "##{field_id}"
       end
     end
   end

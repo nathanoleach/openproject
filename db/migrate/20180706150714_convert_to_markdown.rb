@@ -1,7 +1,6 @@
-#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -24,38 +23,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See doc/COPYRIGHT.rdoc for more details.
+# See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  class Base
-    attr_reader :options, :project
+class ConvertToMarkdown < ActiveRecord::Migration[5.1]
+  def up
+    setting = Setting.where(name: 'text_formatting').pluck(:value)
 
-    def initialize(options)
-      @options = options
-      @project = options[:project]
+    if setting && setting[0] == 'textile'
+      converter = OpenProject::TextFormatting::Formatters::Markdown::TextileConverter.new
+      converter.run!
     end
 
-    def to_html(text)
-      raise NotImplementedError
-    end
-
-    protected
-
-    def filters
-      []
-    end
-
-    protected
-
-    def located_filters
-      filters.map do |f|
-        if [Symbol, String].include? f.class
-          OpenProject::TextFormatting::Filters.const_get("#{f}_filter".classify)
-        else
-          f
-        end
-      end
-    end
+    Setting.where(name: %w(text_formatting use_wysiwyg)).delete_all
   end
 end

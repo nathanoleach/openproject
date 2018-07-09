@@ -28,24 +28,31 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-require 'roar/decorator'
-require 'roar/json/hal'
+module OpenProject::TextFormatting::Formats
+  module Plain
+    class Formatter < OpenProject::TextFormatting::Formats::BaseFormatter
+      attr_reader :context,
+                  :pipeline
 
-module API
-  module V3
-    module Attachments
-      class AttachmentMetadataRepresenter < ::API::Decorators::Single
-        def initialize(attachment)
-          super(attachment, current_user: nil)
-        end
+      def initialize(context)
+        @context = context
+        @pipeline = HTML::Pipeline.new(located_filters, context)
+      end
 
-        property :file_name
-        property :description,
-                 getter: ->(*) {
-                   ::API::Decorators::Formattable.new(description, plain: true)
-                 },
-                 setter: ->(fragment:, **) { self.description = fragment['raw'] },
-                 render_nil: true
+      def to_html(text)
+        pipeline.to_html(text, context).html_safe
+      end
+
+      def to_document(text)
+        pipeline.to_document text, context
+      end
+
+      def filters
+        %i(plain pattern_matcher)
+      end
+
+      def self.format
+        :plain
       end
     end
   end

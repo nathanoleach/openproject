@@ -1,7 +1,8 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -24,41 +25,34 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See doc/COPYRIGHT.rdoc for more details.
+# See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject::TextFormatting::Formatters
-  module Markdown
-    class Formatter < OpenProject::TextFormatting::Formatters::Base
-      attr_reader :context,
-                  :pipeline
+module OpenProject::TextFormatting
+  module Formats
+    class << self
+      attr_reader :plain, :rich
 
-      def initialize(context)
-        @context = context
-        @pipeline = ::HTML::Pipeline.new(located_filters, context)
-      end
+      %i(plain rich).each do |flavor|
+        define_method("#{flavor}_format") do
+          send(flavor).format
+        end
 
-      def to_html(text)
-        result = pipeline.call(text, context)
-        output = result[:output].to_s
+        define_method("#{flavor}_formatter") do
+          send(flavor).formatter
+        end
 
-        output.html_safe
-      end
+        define_method("#{flavor}_helper") do
+          send(flavor).helper
+        end
 
-      def to_document(text)
-        pipeline.to_document text, context
-      end
-
-      def filters
-        [
-          :markdown,
-          :sanitization,
-          HTML::Pipeline::TableOfContentsFilter,
-          :macro,
-          :pattern_matcher,
-          :autolink
-        ]
+        define_method("register_#{flavor}!") do |klass|
+          instance_variable_set("@#{flavor}", klass)
+        end
       end
     end
   end
 end
+
+OpenProject::TextFormatting::Formats.register_plain! ::OpenProject::TextFormatting::Formats::Plain::Format
+OpenProject::TextFormatting::Formats.register_rich! ::OpenProject::TextFormatting::Formats::Markdown::Format
